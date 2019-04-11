@@ -8,5 +8,17 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.11",
+    "@types/node": "^11.13.4",
+    "@types/request": "^2.48.1",
+    "@types/request-promise": "^4.1.42",
+    "typescript": "^3.4.3"
+  }
 }
