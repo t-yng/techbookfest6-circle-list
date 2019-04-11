@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as request from 'request-promise';
+import * as _ from 'lodash';
 
 // サークルリストを取得するAPIのURL一覧
 // WARNING: URLのクエリパラメータの値は変更される可能性あり
@@ -19,11 +20,13 @@ const OUTPUT_FILE = 'data/circle-list-official.json';
   const promises = urls.map( (url) => request.get(url));
   const responses = await Promise.all(promises);
 
-  // サークル情報から取り出したいデータのキー名の配列
-  const circles = responses.reduce((acc: Array<Object>, res: string) => {
-    const list = JSON.parse(res).list
-    return acc.concat(list)
-  }, []);
+  const circles = _.chain(responses)
+                   .reduce((acc, res: string) => {
+                      const list = JSON.parse(res).list
+                      return acc.concat(list)
+                   }, [])
+                   .uniqBy('id')
+                   .values();
 
   const json = JSON.stringify({
     list: circles
