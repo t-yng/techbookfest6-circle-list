@@ -1,5 +1,10 @@
 import * as fs from 'fs';
+import * as util from 'util';
 import * as _ from 'lodash';
+import { builder, Tokenizer, IpadicFeatures } from 'kuromoji'
+// import * as kuromoji from 'kuromoji';
+
+// type Tokenizer<T> = kuromoji.Tokenizer<T>;
 
 const OFFICIAL_CIRCLE_LIST_FILE = 'data/circle-list-official.json';
 const OUTPUT_CSV = 'data/circle-list.csv';
@@ -15,9 +20,10 @@ const outputAsCsv = (circles: Array<Circle>, path: string = OUTPUT_CSV) => {
   const columns = [
     'サークル名',
     '著者',
-    'Webサイト',
-    '詳細ページ',
+    'キーワード',
     'ジャンル詳細',
+    '詳細ページ',
+    'Webサイト',
     '設営場所',
   ];
   const encloseTextByQuotation = encloseTextBySymbol('"');
@@ -31,23 +37,48 @@ const outputAsJson = (circles: Array<Circle>, path: string = OUTPUT_JSON) => {
   fs.writeFileSync(path, json);
 }
 
-const main = () => {
-  const json = fs.readFileSync(OFFICIAL_CIRCLE_LIST_FILE, 'utf-8');
-  const officialCircleList = JSON.parse(json).list;
+const pickKeywords = (tokenizer: Tokenizer<IpadicFeatures>, text: string) => {
+  const tokens = tokenizer.tokenize(text);
 
-  const circles = _.map(officialCircleList, (circle) => {
-    return {
-      name: circle.name,
-      penName: circle.penName,
-      webSiteUrl: _.get(circle, 'webSiteURL', ''),
-      DetailUrl: `https://techbookfest.org/event/tbf06/circle/${circle.id}`,
-      genreFreeFormat: _.get(circle, 'genreFreeFormat', ''),
-      spaces: circle.spaces.join(''),
-    }
+  const keywords = _.chain(tokens)
+                    .filter((token) => token.pos === '名詞' && token.word_type === 'UNKNOWN')
+                    .map((token) => token.surface_form)
+                    .filter((keyword) => !/(^[!-\/:-@\[-`{-~]+$|^\d+$)/.test(keyword)) // 半角記号のみ、数字のみを排除
+                    .uniq() // 重複を排除
+                    .sort()
+                    .value();
+  return keywords;
+}
+
+const main = () => {
+
+  const tokenizerBuilder = builder({
+    dicPath: 'node_modules/kuromoji/dict'
   });
 
-  outputAsCsv(circles);
-  outputAsJson(circles);
+  tokenizerBuilder.build((err, tokenizer) => {
+    if(err) throw err;
+
+    const json = fs.readFileSync(OFFICIAL_CIRCLE_LIST_FILE, 'utf-8');
+    const officialCircleList = JSON.parse(json).list;
+
+    const circles = _.map(officialCircleList, (circle) => {
+      const genreFreeFormat = _.get(circle, 'genreFreeFormat', '');
+
+      return {
+        name: circle.name,
+        penName: circle.penName,
+        keywords: pickKeywords(tokenizer, genreFreeFormat).join(','),
+        genreFreeFormat: genreFreeFormat,
+        DetailUrl: `https://techbookfest.org/event/tbf06/circle/${circle.id}`,
+        webSiteUrl: _.get(circle, 'webSiteURL', ''),
+        spaces: circle.spaces.join(', '),
+      }
+    });
+
+    outputAsCsv(circles);
+    outputAsJson(circles);
+  })
 }
 
 main();
