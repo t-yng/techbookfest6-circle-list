@@ -4,6 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "load": "node build/load.js",
+    "parse": "node build/parse.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
