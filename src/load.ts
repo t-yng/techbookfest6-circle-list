@@ -13,6 +13,8 @@ const urls = [
   'https://techbookfest.org/api/circle?eventID=tbf06&visibility=site&limit=100&onlyAdoption=true&cursor=CkIKEQoGU3BhY2VzEgcaBeOBkTcxEilqC2J-dGJmLXRva3lvchoLEhFDaXJjbGVFeGhpYml0SW5mbxikl5cVDBgAIAA',
 ];
 
+const OUTPUT_FILE = 'data/circile-list-official.json';
+
 (async () => {
   const promises = urls.map( (url) => request.get(url));
   const responses = await Promise.all(promises);
@@ -27,5 +29,5 @@ const urls = [
     list: circles
   });
 
-  fs.writeFileSync('circle-list.json', json);
+  fs.writeFileSync(OUTPUT_FILE, json);
 })();
