@@ -13,7 +13,7 @@ const urls = [
   'https://techbookfest.org/api/circle?eventID=tbf06&visibility=site&limit=100&onlyAdoption=true&cursor=CkIKEQoGU3BhY2VzEgcaBeOBkTcxEilqC2J-dGJmLXRva3lvchoLEhFDaXJjbGVFeGhpYml0SW5mbxikl5cVDBgAIAA',
 ];
 
-const OUTPUT_FILE = 'data/circile-list-official.json';
+const OUTPUT_FILE = 'data/circle-list-official.json';
 
 (async () => {
   const promises = urls.map( (url) => request.get(url));
