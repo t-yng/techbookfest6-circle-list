@@ -36,16 +36,36 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 exports.__esModule = true;
+var fs = require("fs");
 var request = require("request-promise");
-// import cheerio from 'cheerio';
+// サークルリストを取得するAPIのURL一覧
+// WARNING: URLのクエリパラメータの値は変更される可能性あり
+var urls = [
+    'https://techbookfest.org/api/circle?eventID=tbf06&eventExhibitCourceID=4&visibility=site&limit=100&onlyAdoption=true',
+    'https://techbookfest.org/api/circle?eventID=tbf06&eventExhibitCourceID=3&visibility=site&limit=100&onlyAdoption=true',
+    'https://techbookfest.org/api/circle?eventID=tbf06&visibility=site&limit=100&onlyAdoption=true',
+    'https://techbookfest.org/api/circle?eventID=tbf06&visibility=site&limit=100&onlyAdoption=true&cursor=CkIKEQoGU3BhY2VzEgcaBeOBhjY3EilqC2J-dGJmLXRva3lvchoLEhFDaXJjbGVFeGhpYml0SW5mbxj3opsiDBgAIAA',
+    'https://techbookfest.org/api/circle?eventID=tbf06&visibility=site&limit=100&onlyAdoption=true&cursor=CkIKEQoGU3BhY2VzEgcaBeOBizEwEilqC2J-dGJmLXRva3lvchoLEhFDaXJjbGVFeGhpYml0SW5mbxix2aQSDBgAIAA',
+    'https://techbookfest.org/api/circle?eventID=tbf06&visibility=site&limit=100&onlyAdoption=true&cursor=CkIKEQoGU3BhY2VzEgcaBeOBjTMxEilqC2J-dGJmLXRva3lvchoLEhFDaXJjbGVFeGhpYml0SW5mbxjSjJshDBgAIAA',
+    'https://techbookfest.org/api/circle?eventID=tbf06&visibility=site&limit=100&onlyAdoption=true&cursor=CkIKEQoGU3BhY2VzEgcaBeOBkTcxEilqC2J-dGJmLXRva3lvchoLEhFDaXJjbGVFeGhpYml0SW5mbxikl5cVDBgAIAA',
+];
 (function () { return __awaiter(_this, void 0, void 0, function () {
-    var res;
+    var promises, responses, circles, json;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, request.get('https://yosuke-furukawa.hatenablog.com/entry/2017/05/10/101752')];
+            case 0:
+                promises = urls.map(function (url) { return request.get(url); });
+                return [4 /*yield*/, Promise.all(promises)];
             case 1:
-                res = _a.sent();
-                console.log(res);
+                responses = _a.sent();
+                circles = responses.reduce(function (acc, res) {
+                    var list = JSON.parse(res).list;
+                    return acc.concat(list);
+                }, []);
+                json = JSON.stringify({
+                    list: circles
+                });
+                fs.writeFileSync('circle-list.json', json);
                 return [2 /*return*/];
         }
     });
