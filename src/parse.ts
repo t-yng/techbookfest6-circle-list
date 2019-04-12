@@ -20,8 +20,8 @@ const outputAsCsv = (circles: Array<Circle>, path: string = OUTPUT_CSV) => {
   const columns = [
     'サークル名',
     '著者',
-    'キーワード',
     'ジャンル詳細',
+    'キーワード',
     '詳細ページ',
     'Webサイト',
     '設営場所',
@@ -68,8 +68,8 @@ const main = () => {
       return {
         name: circle.name,
         penName: circle.penName,
-        keywords: pickKeywords(tokenizer, genreFreeFormat).join(','),
         genreFreeFormat: genreFreeFormat,
+        keywords: pickKeywords(tokenizer, genreFreeFormat).join(','),
         DetailUrl: `https://techbookfest.org/event/tbf06/circle/${circle.id}`,
         webSiteUrl: _.get(circle, 'webSiteURL', ''),
         spaces: circle.spaces.join(', '),
