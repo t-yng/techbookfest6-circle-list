@@ -1,10 +1,6 @@
 import * as fs from 'fs';
-import * as util from 'util';
 import * as _ from 'lodash';
 import { builder, Tokenizer, IpadicFeatures } from 'kuromoji'
-// import * as kuromoji from 'kuromoji';
-
-// type Tokenizer<T> = kuromoji.Tokenizer<T>;
 
 const OFFICIAL_CIRCLE_LIST_FILE = 'data/circle-list-official.json';
 const OUTPUT_CSV = 'data/circle-list.csv';
